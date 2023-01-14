@@ -21,7 +21,7 @@ const yamlFile = yaml.load(join(process.cwd(), "./src/docs/apiDocs.yml"));
 
 const server = express();
 
-const port = process.env.port;
+const port = process.env.PORT;
 const whitelist = [process.env.FE_DEV_URL, process.env.FE_PROD_URL];
 
 const corsOpts = {
