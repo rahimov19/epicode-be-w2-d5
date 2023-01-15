@@ -45,7 +45,7 @@ moviesRouter.get("/", async (req, res, next) => {
       } else {
         try {
           let response = await fetch(
-            `http://www.omdbapi.com/?s=${req.query.search}&apikey=383cbcb8`,
+            `https://www.omdbapi.com/?s=${req.query.search}&apikey=383cbcb8`,
             { method: "GET" }
           );
           if (response.ok) {

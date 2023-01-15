@@ -1,0 +1,351 @@
+openapi: 3.0.1
+info:
+  title: Strive movies
+  description: We post about everything
+  version: 1.0.1
+servers:
+  - url: http://localhost:3001
+    variables: {}
+    description: Local server
+  - url: https://epicode-be-w2-d5-production.up.railway.app/
+    variables: {}
+    description: Cloud server
+tags:
+  - name: movies
+    description: Operations about movies
+  - name: reviews
+    description: Operations about reviews
+  - name: files
+    description: Operation with files
+paths:
+  /movies:
+    get:
+      tags:
+        - movies
+      summary: Returns a list of movies
+      description: Gets list of all movies in database
+       responses:
+        "200":
+          description: A list of movies
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/movie"
+        "500":
+          $ref: "#/components/responses/GenericServerError"
+    post:
+      tags:
+        - movies
+      summary: Create a new movie
+      description: Adds a new movie
+      requestBody:
+        description: The body
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/movie"
+      responses:
+        "201":
+          description: The ID of the newly created movie
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/GenericServerError"
+  /movies/{movieId}:
+    get:
+      tags:
+        - movies
+      summary: Get by Id
+      description: Retrieve single movie
+      parameters:
+        - in: path
+          name: movieId
+          required: true
+          schema:
+            type: string
+          description: The ID of the movie to retrieve
+      responses:
+        "200":
+          description: The single movie
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/movie"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/GenericServerError"
+   
+  
+  /reviews/:imdbId/reviews:
+    get:
+      tags:
+        - reviews
+      summary: Returns a list of reviews.
+      description: Gets a list of reviews of exact movie.
+      parameters:
+        - in: path
+          name: imdbId
+          required: true
+          schema:
+            type: string
+          description: The ID of the movie to retrieve
+      responses:
+      responses:
+        "200":
+          description: A list of reviews
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/review"
+        "500":
+          $ref: "#/components/responses/GenericServerError"
+    post:
+      summary: Create
+      description: Add a new review
+      parameters:
+        - in: path
+          name: imdbId
+          required: true
+          schema:
+            type: string
+          description: The ID of the movie to retrieve
+      responses:
+      requestBody:
+        description: The object
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/review"
+      responses:
+        "201":
+          description: The ID of the newly created movie
+          content:
+            application/json:
+              schema:
+                type: string
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/GenericServerError"
+      tags:
+        - reviews
+  /reviews/:imdbId/reviews/{reviewId}:
+    summary: Specific review related endpoints
+    get:
+      summary: Get by Id
+      description: Retrieve single review's data
+      parameters:
+        - in: path
+          name: imdbId
+          required: true
+          schema:
+            type: string
+          description: The ID of the movie to retrieve
+        - in: path
+          name: reviewId
+          required: true
+          schema:
+            type: string
+          description: The ID of the review to show
+      operationId: ""
+      responses:
+        "200":
+          description: The review
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/review"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/GenericServerError"
+      tags:
+        - reviews
+    put:
+      summary: Update
+      description: Update an existing review
+      parameters:
+        - in: path
+          name: imdbId
+          required: true
+          schema:
+            type: string
+          description: The ID of the movie to change data
+        - in: path
+          name: reviewId
+          required: true
+          schema:
+            type: string
+          description: The ID of the review to change data
+      requestBody:
+        description: The object
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/review"
+      responses:
+        "200":
+          description: The modified review
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/review"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/GenericServerError"
+      tags:
+        - reviews
+    delete:
+      summary: Delete
+      description: Delete a specific review by Id
+      parameters:
+        - in: path
+          name: imdbId
+          required: true
+          schema:
+            type: string
+          description: The ID of the movie to delete
+        - in: path
+          name: reviewId
+          required: true
+          schema:
+            type: string
+          description: The ID of the review to delete
+      operationId: ""
+      responses:
+        "204":
+          description: No Content
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/GenericServerError"
+      tags:
+        - reviews
+
+  /files/:movieId/cover:
+    post:
+      description: Uploads cover to movie
+      parameters:
+        - in: path
+          name: postId
+          required: true
+          schema:
+            type: string
+          description: The ID of the movie to Add cover to
+      
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                movie:
+                  type: string
+                  format: binary
+      responses:
+        "200":
+          description: Ok
+        "404":
+          $ref: "#/components/responses/NotFound"
+      tags:
+        - files
+  /files/savepdf:
+    post:
+      description: Uploads data to buffer for getting a pdf file
+       tags:
+        - files
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+             
+      responses:
+        "200":
+          description: Ok
+        "404":
+          $ref: "#/components/responses/NotFound"
+  /files/pdf3:
+    get:
+      description: Gets a pdf file of movie from buffer file
+      tags:
+        - files
+      responses:
+        "200":
+          description: Ok
+        "404":
+          $ref: "#/components/responses/NotFound"
+components:
+  responses:
+    NotFound:
+      description: The specific resource was not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    BadRequest:
+      description: Some problems with your request
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    Unauthorized:
+      description: Bearer token missing or invalid
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    GenericServerError:
+      description: A problem on the server occurred
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+  schemas:
+    movie:
+      type: object
+      properties:
+        title:
+          type: string
+        year:
+          type: number
+        cover:
+          type: string
+        id:
+          type: string
+    review:
+      type: object
+      properties:
+        id:
+          type: string
+        imdbId:
+          type: string
+        name:
+          type: string
+        comment:
+          type: string
+        rate: 
+          type: number
+    error:
+      type: object
+      properties:
+        success:
+          type: boolean
+          default: false
+        message:
+        type: string

@@ -44,26 +44,6 @@ filesRouter.post(
   }
 );
 
-filesRouter.get("/:movieId/pdf", async (req, res, next) => {
-  try {
-    res.setHeader("Content-Disposition", "attachment; filename=Movie.pdf");
-    const movies = await getMovies();
-    const index = movies.findIndex(
-      (movie) => movie.imdbID === req.params.movieId
-    );
-    if (index !== -1) {
-      const movie = movies[index];
-      const source = await getPDFReadableStream(movie);
-      const destination = res;
-      pipeline(source, destination, (err) => {
-        if (err) console.log(err);
-      });
-    }
-  } catch (error) {
-    console.log(error);
-  }
-});
-
 filesRouter.post("/savepdf", async (req, res, next) => {
   let pdfArray = await getPDF();
   try {

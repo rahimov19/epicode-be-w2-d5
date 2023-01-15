@@ -15,6 +15,7 @@ import {
 } from "./errorHandlers.js";
 import moviesRouter from "./api/movies/index.js";
 import filesRouter from "./api/files/index.js";
+import reviewsRouter from "./api/reviews/index.js";
 
 const publicFolderPath = join(process.cwd(), "./public");
 const yamlFile = yaml.load(join(process.cwd(), "./src/docs/apiDocs.yml"));
@@ -41,6 +42,8 @@ server.use(cors(corsOpts));
 
 server.use("/movies", moviesRouter);
 server.use("/files", filesRouter);
+server.use("/reviews", reviewsRouter);
+server.use("/docs", swagger.serve, swagger.setup(yamlFile));
 
 server.use(badRequestHanlder);
 server.use(unauthorizedHandler);
